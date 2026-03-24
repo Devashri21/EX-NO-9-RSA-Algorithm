@@ -36,12 +36,109 @@ Step 5: **Security Foundation
 The security of RSA relies on the difficulty of factoring large numbers; thus, choosing sufficiently large prime numbers for \( p \) and \( q \) is crucial for security.
 
 ## Program:
-
+```
+#include <stdio.h> 
+#include <string.h> 
+ 
+long long mod_exp(long long base, long long exp, long long mod) 
+{ 
+    long long result = 1; 
+ 
+    while(exp > 0) 
+    { 
+        if(exp % 2 == 1) 
+            result = (result * base) % mod; 
+ 
+        base = (base * base) % mod; 
+        exp = exp / 2; 
+    } 
+ 
+    return result; 
+} 
+ 
+int gcd(int a, int b) 
+{ 
+    while(b != 0) 
+    { 
+        int temp = b; 
+        b = a % b; 
+        a = temp; 
+    } 
+ 
+    return a; 
+} 
+ 
+int mod_inverse(int e, int phi) 
+{ 
+    int t = 0, newt = 1; 
+    int r = phi, newr = e; 
+ 
+    while(newr != 0) 
+    { 
+        int q = r / newr; 
+ 
+        int temp = newt; 
+        newt = t - q * newt; 
+        t = temp; 
+ 
+        temp = newr; 
+        newr = r - q * newr; 
+        r = temp; 
+    } 
+ 
+    if(t < 0) 
+        t = t + phi; 
+ 
+    return t; 
+} 
+ 
+int main() 
+{ 
+    int p = 61; 
+    int q = 53; 
+ 
+    int n = p * q; 
+    int phi = (p - 1) * (q - 1); 
+ 
+    int e = 17; 
+    int d = mod_inverse(e, phi); 
+ 
+    printf("Public Key (e,n) = (%d,%d)\n", e, n); 
+    printf("Private Key (d,n) = (%d,%d)\n", d, n); 
+ 
+    char msg[] = "HELLO"; 
+    long long encrypted[100]; 
+    int i, len = strlen(msg); 
+ 
+    printf("Original Message: %s\n", msg); 
+ 
+    for(i = 0; i < len; i++) 
+    { 
+        encrypted[i] = mod_exp(msg[i], e, n); 
+    } 
+ 
+    printf("Encrypted Message: "); 
+    for(i = 0; i < len; i++) 
+    { 
+        printf("%lld ", encrypted[i]); 
+    } 
+ 
+    printf("\nDecrypted Message: "); 
+    for(i = 0; i < len; i++) 
+    { 
+        char ch = (char)mod_exp(encrypted[i], d, n); 
+        printf("%c", ch); 
+    } 
+ 
+    return 0; 
+} 
+```
 
 
 
 ## Output:
 
+<img width="702" height="192" alt="image" src="https://github.com/user-attachments/assets/e40ac878-471e-489a-b072-835b220b2652" />
 
 
 ## Result:
